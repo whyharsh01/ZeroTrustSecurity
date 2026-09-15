@@ -5,6 +5,7 @@ import com.harsh.zeroTrust.service.CustomUserDetailService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -54,12 +55,28 @@ public class SecurityConfig {
             HttpSecurity httpSecurity,
             JwtAuthenticationConverter jwtAuthenticationConverter) {
 
-        httpSecurity.csrf(csrf -> csrf.disable())
+        httpSecurity
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
 
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/users/register", "/auth/login"
-                                ).permitAll()
-                                .anyRequest().authenticated()
+                        .requestMatchers(
+                                "/api/users/register",
+                                "/auth/login",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/users/hello"
+                        ).hasAuthority("USER_READ")
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/audit"
+                        ).hasAuthority("AUDIT_READ")
+
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(

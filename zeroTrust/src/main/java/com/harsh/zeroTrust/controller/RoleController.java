@@ -3,10 +3,7 @@ package com.harsh.zeroTrust.controller;
 import com.harsh.zeroTrust.entity.Role;
 import com.harsh.zeroTrust.service.RoleService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/roles")
@@ -22,5 +19,15 @@ public class RoleController {
         roleService.setRole(role);
 
         return ResponseEntity.ok("Done");
+    }
+
+    @PostMapping("/{roleId}/permissions/{permissionName}")
+    public ResponseEntity<String> addPermission(
+            @PathVariable Long roleId,
+            @PathVariable String permissionName) {
+
+        roleService.addPermissionToRole(roleId, permissionName);
+
+        return ResponseEntity.ok("Permission assigned");
     }
 }
